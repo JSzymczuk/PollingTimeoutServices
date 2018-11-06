@@ -23,7 +23,8 @@ Do Global.asax.cs dodać:
 	GlobalConfiguration.Configure(WebApiConfig.Register); (po RegisterAllAreas)
 	
 Dodać usługę:
-	[EnableCors(origins: "*", headers: "*", methods: "*")]
+
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class TimeoutApiController : ApiController
     {
         [HttpGet]
@@ -36,4 +37,4 @@ Dodać usługę:
                 Content = new StringContent("Get.", Encoding.UTF8, "application/json")
             };
         }
-	}
+    }
