@@ -1,31 +1,56 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Index";
 }
-
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
-
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+<div style="margin:20px">
+    <div>
+        <button class="btn btn-default" id="simpleGet" data-url="">SimpleGet</button>
+        <button class="btn btn-default" id="simplePost" data-url="">SimplePost</button>
     </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+    <div>
+        Timeout: <input type="text" id="timeout" />
+        <button class="btn btn-default" id="timeoutGet" data-url="">TimeoutGet</button>
+        <button class="btn btn-default" id="timeoutPost" data-url="">TimeoutPost</button>
     </div>
 </div>
+<div>
+    <h2>Wyniki zapytania</h2>
+    <div>Status: <span id="statusCode"></span></div>
+    <div class="jumbotron" id="requestResult"></div>
+
+</div>
+
+
+
+<script>
+    $("#simpleGet").click(function () {
+        $.get('@Url.Action("SimpleGet")', setResult);
+    });
+
+    $("#simplePost").click(function () {
+        $.post('@Url.Action("SimplePost")', setResult);
+    });
+
+
+    $("#timeoutGet").click(function () {
+        showProgress();
+        $.get('@Url.Action("TimeoutGet")', { secs: getTimeout() }, setResult);
+        
+    });
+
+    $("#timeoutPost").click(function () {
+        showProgress();
+        $.post('@Url.Action("TimeoutPost")', { secs: getTimeout() }, setResult);
+    });
+
+    function setResult(result) {
+        $("#statusCode").text(result.status);
+        $("#requestResult").text(result.content);
+        hideProgress();
+    }
+
+    function getTimeout() {
+        return $("#timeout").val();
+    }
+
+
+</script>
