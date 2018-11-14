@@ -1,4 +1,5 @@
 ﻿using Hangfire;
+using Hangfire.Storage;
 using Polly;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -27,7 +29,7 @@ namespace PollingClient.Controllers
         string TimeoutUrl => $"{ServiceUrl}/Timeout";
         string RetryUrl => $"{ServiceUrl}/Retry";
 
-        private static readonly HttpClient client = new HttpClient();
+        private static readonly HttpClient client = new HttpClient() { Timeout = TimeSpan.FromMinutes(10) };
 
         public ActionResult Index()
         {
@@ -92,16 +94,38 @@ namespace PollingClient.Controllers
 
         public ActionResult StopPolling()
         {
-            RecurringJob.RemoveIfExists("JobId");
+            //RecurringJob.RemoveIfExists("JobId");
+            removeAllJobs();
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
 
         public void singlePollingRequest()
         {
-            var requestResult = client.GetAsync($"{TimeoutUrl}/{110}").Result;
-            var singlePollingResult = $"{DateTime.Now.ToLocalTime()} {requestResult.StatusCode} {requestResult.Content.ReadAsStringAsync().Result}\n";
+            var requestResult = client.GetAsync($"{TimeoutUrl}/{110}").GetAwaiter().GetResult();
+            //var requestResult = Task.Run(() =>
+            //{
+            //    Thread.Sleep(110);
+            //    return new HttpResponseMessage()
+            //    {
+            //        StatusCode = HttpStatusCode.OK,
+            //        Content = new StringContent("Sztuczne czekanie")
+            //    };
+            //}).Result;
+
+            var singlePollingResult = $"{DateTime.Now.ToLocalTime()} {requestResult.StatusCode} {requestResult.Content.ReadAsStringAsync().Result} \n";
             PersistentState.PollingResults.Add(singlePollingResult);
+        }
+
+        private void removeAllJobs()
+        {
+            using (var connection = JobStorage.Current.GetConnection())
+            {
+                foreach (var job in StorageConnectionExtensions.GetRecurringJobs(connection))
+                {
+                    RecurringJob.RemoveIfExists(job.Id);
+                }
+            }
         }
 
     }
