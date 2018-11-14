@@ -11,12 +11,19 @@
         <button class="btn btn-default" id="timeoutGet" data-url="">TimeoutGet</button>
         <button class="btn btn-default" id="timeoutPost" data-url="">TimeoutPost</button>
     </div>
+    <div>
+        <button class="btn btn-default" id="retryGet" data-url="">RetryGet</button>
+    </div>
+    <div>
+        <button class="btn btn-default" id="startPolling" data-url="">StartPolling</button>
+        <button class="btn btn-default" id="getPollingResults" data-url="">GetPollingResults</button>
+        <button class="btn btn-default" id="stopPolling" data-url="">StopPolling</button>
+    </div>
 </div>
 <div>
     <h2>Wyniki zapytania</h2>
     <div>Status: <span id="statusCode"></span></div>
     <div class="jumbotron" id="requestResult"></div>
-
 </div>
 
 
@@ -27,19 +34,38 @@
     });
 
     $("#simplePost").click(function () {
-        $.post('@Url.Action("SimplePost")', setResult);
+        $.post('@Url.Action("SimplePost")', setResult, );
     });
 
 
     $("#timeoutGet").click(function () {
         showProgress();
         $.get('@Url.Action("TimeoutGet")', { secs: getTimeout() }, setResult);
-        
     });
 
     $("#timeoutPost").click(function () {
         showProgress();
         $.post('@Url.Action("TimeoutPost")', { secs: getTimeout() }, setResult);
+    });
+
+   $("#retryGet").click(function () {
+        showProgress();
+        $.get('@Url.Action("RetryGet")', setResult);
+    });
+
+    $("#startPolling").click(function () {
+        showProgress();
+        $.get('@Url.Action("StartPolling")', setResult);
+    });
+
+    $("#stopPolling").click(function () {
+        showProgress();
+        $.get('@Url.Action("StopPolling")', setResult);
+    });
+
+     $("#getPollingResults").click(function () {
+        showProgress();
+        $.get('@Url.Action("GetPollingResults")', setResult);
     });
 
     function setResult(result) {

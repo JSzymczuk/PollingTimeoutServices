@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hangfire;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -65,7 +66,7 @@ namespace TimeoutService.Controllers
         [Route("Timeout/{secs}")]
         public HttpResponseMessage Get(int secs)
         {
-            Thread.Sleep(secs * 1000);
+            longRunningFunction(secs);
             return new HttpResponseMessage()
             {
                 StatusCode = HttpStatusCode.OK,
@@ -83,12 +84,33 @@ namespace TimeoutService.Controllers
             {
                 responseMessage += "\n" + requestContent;
             }
-            Thread.Sleep(secs * 1000);
+            longRunningFunction(secs);
             return new HttpResponseMessage()
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(responseMessage, Encoding.UTF8, "application/json")
             };
+        }
+
+        [HttpGet]
+        [Route("Retry/{t}")]
+        public HttpResponseMessage GetThirdTime(int t)
+        {
+            if (t == 3)
+            {
+                return new HttpResponseMessage()
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent("Prawidłowa odpowiedź za trzecim razem", Encoding.UTF8, "application/json")
+                };
+            }
+            else return null;
+        }
+
+
+        private void longRunningFunction(int seconds)
+        {
+            Thread.Sleep(seconds * 1000);
         }
     }
 }

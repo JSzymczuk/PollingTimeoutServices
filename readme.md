@@ -1,3 +1,5 @@
+# REST Api
+
 Install-Package Microsoft.AspNet.WebApi.Cors
 Install-Package Microsoft.AspNet.WebApi.WebHost 
 Dodać refrencję do System.ServiceModel.
@@ -38,3 +40,8 @@ Dodać usługę:
             };
         }
     }
+
+
+# Hangfire 
+Zadania muszą mieć bazę, do której będą zapisywane, a sam hangfire musi być [skonfigurowany przy starcie aplikacji](http://docs.hangfire.io/en/latest/configuration/index.html) 
+Aby aplikacja działała bez przerwy należy [poniższe kroki](http://docs.hangfire.io/en/latest/deployment-to-production/making-aspnet-app-always-running.html)
